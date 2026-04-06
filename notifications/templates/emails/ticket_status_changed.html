@@ -1,0 +1,17 @@
+{% extends "emails/base.html" %}
+{% block title %}Ticket Status Updated{% endblock %}
+{% block content %}
+<h2>Ticket Status Updated</h2>
+<p>Hello {{ user.get_full_name|default:user.email }},</p>
+<p>The status of your support ticket has been updated.</p>
+<table class="info-table">
+    <tr><td>Ticket Number</td><td>{{ ticket.ticket_number }}</td></tr>
+    <tr><td>Title</td><td>{{ ticket.title }}</td></tr>
+    <tr><td>New Status</td><td>{{ ticket.get_status_display }}</td></tr>
+    <tr><td>Priority</td><td>{{ ticket.get_priority_display }}</td></tr>
+    <tr><td>Updated</td><td>{{ ticket.updated_at|date:"F d, Y H:i" }}</td></tr>
+</table>
+{% if ticket.status == 'resolved' %}
+<p>Your ticket has been resolved. If your issue is not fully resolved, please reply to reopen it.</p>
+{% endif %}
+{% endblock %}

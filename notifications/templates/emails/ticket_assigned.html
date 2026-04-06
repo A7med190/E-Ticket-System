@@ -1,0 +1,15 @@
+{% extends "emails/base.html" %}
+{% block title %}Ticket Assigned{% endblock %}
+{% block content %}
+<h2>New Ticket Assigned</h2>
+<p>Hello {{ user.get_full_name|default:user.email }},</p>
+<p>A new support ticket has been assigned to you.</p>
+<table class="info-table">
+    <tr><td>Ticket Number</td><td>{{ ticket.ticket_number }}</td></tr>
+    <tr><td>Title</td><td>{{ ticket.title }}</td></tr>
+    <tr><td>Priority</td><td>{{ ticket.get_priority_display }}</td></tr>
+    <tr><td>Reporter</td><td>{{ ticket.reporter.get_full_name|default:ticket.reporter.email }}</td></tr>
+    <tr><td>Category</td><td>{{ ticket.category.name }}</td></tr>
+</table>
+<p>Please review and respond to this ticket at your earliest convenience.</p>
+{% endblock %}

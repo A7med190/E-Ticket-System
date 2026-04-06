@@ -1,0 +1,17 @@
+{% extends "emails/base.html" %}
+{% block title %}Event Reminder{% endblock %}
+{% block content %}
+<h2>Event Reminder</h2>
+<p>Hello {{ user.get_full_name|default:user.email }},</p>
+<p>This is a friendly reminder that the event you booked is coming up soon!</p>
+<table class="info-table">
+    <tr><td>Event</td><td>{{ event.title }}</td></tr>
+    <tr><td>Date</td><td>{{ event.start_date|date:"F d, Y H:i" }}</td></tr>
+    <tr><td>Venue</td><td>{{ event.venue }}</td></tr>
+    {% if event.venue_address %}
+    <tr><td>Address</td><td>{{ event.venue_address }}</td></tr>
+    {% endif %}
+    <tr><td>Booking Code</td><td>{{ booking.booking_code }}</td></tr>
+</table>
+<p>Please arrive at least 30 minutes before the event starts. Don't forget to bring your QR code ticket!</p>
+{% endblock %}

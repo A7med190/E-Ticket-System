@@ -1,0 +1,14 @@
+{% extends "emails/base.html" %}
+{% block title %}Payment Completed{% endblock %}
+{% block content %}
+<h2>Payment Completed</h2>
+<p>Hello {{ user.get_full_name|default:user.email }},</p>
+<p>Your payment has been successfully processed.</p>
+<table class="info-table">
+    <tr><td>Booking Code</td><td>{{ booking.booking_code }}</td></tr>
+    <tr><td>Event</td><td>{{ booking.event.title }}</td></tr>
+    <tr><td>Amount Paid</td><td><strong>${{ booking.total_price }}</strong></td></tr>
+    <tr><td>Status</td><td>Confirmed</td></tr>
+</table>
+<p>Your booking is now confirmed. You can view your ticket and QR code in your account.</p>
+{% endblock %}

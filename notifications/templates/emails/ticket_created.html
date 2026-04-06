@@ -1,0 +1,16 @@
+{% extends "emails/base.html" %}
+{% block title %}Ticket Created{% endblock %}
+{% block content %}
+<h2>Support Ticket Created</h2>
+<p>Hello {{ user.get_full_name|default:user.email }},</p>
+<p>Your support ticket has been successfully created and is being processed.</p>
+<table class="info-table">
+    <tr><td>Ticket Number</td><td>{{ ticket.ticket_number }}</td></tr>
+    <tr><td>Title</td><td>{{ ticket.title }}</td></tr>
+    <tr><td>Priority</td><td>{{ ticket.get_priority_display }}</td></tr>
+    <tr><td>Status</td><td>{{ ticket.get_status_display }}</td></tr>
+    <tr><td>Category</td><td>{{ ticket.category.name }}</td></tr>
+    <tr><td>Created</td><td>{{ ticket.created_at|date:"F d, Y H:i" }}</td></tr>
+</table>
+<p>Our team will review your ticket and respond as soon as possible.</p>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "emails/base.html" %}
+{% block title %}New Comment on Ticket{% endblock %}
+{% block content %}
+<h2>New Comment on Your Ticket</h2>
+<p>Hello {{ user.get_full_name|default:user.email }},</p>
+<p>There is a new comment on your support ticket <strong>{{ ticket.ticket_number }}</strong>.</p>
+<table class="info-table">
+    <tr><td>Ticket</td><td>{{ ticket.ticket_number }} - {{ ticket.title }}</td></tr>
+    <tr><td>Status</td><td>{{ ticket.get_status_display }}</td></tr>
+</table>
+<p>Please log in to your account to view the full comment and respond.</p>
+{% endblock %}

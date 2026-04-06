@@ -1,0 +1,20 @@
+{% extends "emails/base.html" %}
+{% block title %}Booking Confirmed{% endblock %}
+{% block content %}
+<h2>Booking Confirmed!</h2>
+<p>Hello {{ user.get_full_name|default:user.email }},</p>
+<p>Your booking has been confirmed. Here are the details:</p>
+<table class="info-table">
+    <tr><td>Booking Code</td><td><strong>{{ booking.booking_code }}</strong></td></tr>
+    <tr><td>Event</td><td>{{ booking.event.title }}</td></tr>
+    <tr><td>Date</td><td>{{ booking.event.start_date|date:"F d, Y H:i" }}</td></tr>
+    <tr><td>Venue</td><td>{{ booking.event.venue }}</td></tr>
+    <tr><td>Ticket Type</td><td>{{ booking.ticket_type.name }}</td></tr>
+    <tr><td>Quantity</td><td>{{ booking.quantity }}</td></tr>
+    <tr><td>Total</td><td>${{ booking.total_price }}</td></tr>
+</table>
+{% if booking.qr_code %}
+<p>Your QR code ticket is attached to this booking. Please present it at the event entrance.</p>
+{% endif %}
+<p>We look forward to seeing you at the event!</p>
+{% endblock %}

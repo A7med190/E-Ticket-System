@@ -1,0 +1,14 @@
+{% extends "emails/base.html" %}
+{% block title %}Booking Cancelled{% endblock %}
+{% block content %}
+<h2>Booking Cancelled</h2>
+<p>Hello {{ user.get_full_name|default:user.email }},</p>
+<p>Your booking has been cancelled.</p>
+<table class="info-table">
+    <tr><td>Booking Code</td><td>{{ booking.booking_code }}</td></tr>
+    <tr><td>Event</td><td>{{ booking.event.title }}</td></tr>
+    <tr><td>Date</td><td>{{ booking.event.start_date|date:"F d, Y H:i" }}</td></tr>
+    <tr><td>Amount</td><td>${{ booking.total_price }}</td></tr>
+</table>
+<p>If you have any questions about this cancellation, please contact our support team.</p>
+{% endblock %}

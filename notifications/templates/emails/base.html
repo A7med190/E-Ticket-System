@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}E-Ticketing System{% endblock %}</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: 20px auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header { background: #2563eb; color: #fff; padding: 20px 30px; text-align: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 30px; }
+        .content h2 { color: #2563eb; margin-top: 0; }
+        .btn { display: inline-block; padding: 12px 30px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+        .btn:hover { background: #1d4ed8; }
+        .footer { background: #f8f9fa; padding: 20px 30px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid #e9ecef; }
+        .info-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        .info-table td { padding: 8px 12px; border-bottom: 1px solid #e9ecef; }
+        .info-table td:first-child { font-weight: bold; width: 40%; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>E-Ticketing System</h1>
+        </div>
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+        <div class="footer">
+            <p>This is an automated message from the E-Ticketing System. Please do not reply to this email.</p>
+            <p>&copy; {% now "Y" %} E-Ticketing System. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

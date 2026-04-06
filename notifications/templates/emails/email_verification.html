@@ -1,0 +1,12 @@
+{% extends "emails/base.html" %}
+{% block title %}Verify Your Email{% endblock %}
+{% block content %}
+<h2>Welcome, {{ user.get_full_name|default:user.email }}!</h2>
+<p>Thank you for registering with the E-Ticketing System. Please verify your email address by clicking the button below:</p>
+<p style="text-align: center;">
+    <a href="{{ verify_url }}" class="btn">Verify Email Address</a>
+</p>
+<p>If the button doesn't work, copy and paste this link into your browser:</p>
+<p style="word-break: break-all; color: #2563eb;">{{ verify_url }}</p>
+<p>This link will expire in 24 hours.</p>
+{% endblock %}
