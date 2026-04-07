@@ -1,0 +1,37 @@
+{
+  "info": {"name": "E-Ticket System API", "description": "Django REST API for E-Ticket System", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},
+  "variable": [
+    {"key": "baseUrl", "value": "http://localhost:8000/api/v1", "type": "string"},
+    {"key": "accessToken", "value": "", "type": "string"}
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {"name": "Register", "request": {"method": "POST", "url": "{{baseUrl}}/accounts/register/", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\"email\": \"user@example.com\", \"password\": \"password123\", \"first_name\": \"John\", \"last_name\": \"Doe\"}"}}},
+        {"name": "Login", "request": {"method": "POST", "url": "{{baseUrl}}/auth/login/", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\"email\": \"user@example.com\", \"password\": \"password123\"}"}}},
+        {"name": "Profile", "request": {"method": "GET", "url": "{{baseUrl}}/accounts/profile/", "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}]}}
+      ]
+    },
+    {"name": "Events", "item": [
+        {"name": "List Events", "request": {"method": "GET", "url": "{{baseUrl}}/events/", "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}]}},
+        {"name": "Get Event", "request": {"method": "GET", "url": "{{baseUrl}}/events/{{event_id}}/", "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}]}},
+        {"name": "Create Event", "request": {"method": "POST", "url": "{{baseUrl}}/events/", "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}], "body": {"mode": "raw", "raw": "{\"title\": \"Concert\", \"description\": \"Music event\", \"date\": \"2024-12-31T20:00:00Z\", \"venue\": \"Stadium\", \"total_capacity\": 1000}"}}}
+    ]},
+    {"name": "Bookings", "item": [
+        {"name": "List Bookings", "request": {"method": "GET", "url": "{{baseUrl}}/bookings/", "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}]}},
+        {"name": "Create Booking", "request": {"method": "POST", "url": "{{baseUrl}}/bookings/", "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}], "body": {"mode": "raw", "raw": "{\"event\": \"\", \"ticket_type\": \"\", \"quantity\": 2}"}}},
+        {"name": "Cancel Booking", "request": {"method": "PUT", "url": "{{baseUrl}}/bookings/{{booking_id}}/cancel/", "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}]}}
+    ]},
+    {"name": "Tickets", "item": [
+        {"name": "List Tickets", "request": {"method": "GET", "url": "{{baseUrl}}/tickets/", "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}]}},
+        {"name": "Get Ticket", "request": {"method": "GET", "url": "{{baseUrl}}/tickets/{{ticket_id}}/", "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}]}},
+        {"name": "Validate Ticket", "request": {"method": "POST", "url": "{{baseUrl}}/tickets/validate/", "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}], "body": {"mode": "raw", "raw": "{\"ticket_code\": \"ABC123\"}"}}}
+    ]},
+    {"name": "Support Tickets", "item": [
+        {"name": "List Tickets", "request": {"method": "GET", "url": "{{baseUrl}}/support-tickets/", "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}]}},
+        {"name": "Create Ticket", "request": {"method": "POST", "url": "{{baseUrl}}/support-tickets/", "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}], "body": {"mode": "raw", "raw": "{\"subject\": \"Issue\", \"description\": \"Need help\", \"priority\": \"medium\"}"}}},
+        {"name": "Add Comment", "request": {"method": "POST", "url": "{{baseUrl}}/support-tickets/{{ticket_id}}/comments/", "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}], "body": {"mode": "raw", "raw": "{\"content\": \"Comment here\"}"}}}
+    ]}
+  ]
+}

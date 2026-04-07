@@ -83,6 +83,7 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += [path('__debug__/', include('debug_toolbar.urls'))]
 
 admin.site.site_header = 'E-Ticketing System Admin'
 admin.site.site_title = 'E-Ticketing Admin'
