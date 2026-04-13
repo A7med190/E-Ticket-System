@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.db.models import Count, Sum, Q
 from django.utils import timezone
@@ -68,6 +68,41 @@ def dashboard(request):
     return Response(data)
 
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def health_check(request):
+    from django.db import connection
+    from django.core.cache import cache
+    from django.utils import timezone
+    
+    health = {
+        'status': 'healthy',
+        'timestamp': timezone.now().isoformat(),
+        'checks': {}
+    }
+    
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT 1')
+        health['checks']['database'] = 'ok'
+    except Exception as e:
+        health['checks']['database'] = f'error: {str(e)}'
+        health['status'] = 'unhealthy'
+    
+    try:
+        cache.set('health_check', 'ok', 1)
+        if cache.get('health_check') == 'ok':
+            health['checks']['cache'] = 'ok'
+        else:
+            health['checks']['cache'] = 'error: cache not working'
+            health['status'] = 'degraded'
+    except Exception as e:
+        health['checks']['cache'] = f'error: {str(e)}'
+        health['status'] = 'degraded'
+    
+    return Response(health, status=200 if health['status'] == 'healthy' else 503)
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('accounts.urls')),
@@ -75,10 +110,28 @@ urlpatterns = [
     path('api/events/', include('event_tickets.urls')),
     path('api/', include('notifications.urls')),
     path('api/dashboard/', dashboard, name='dashboard'),
+    path('api/health/', health_check, name='health_check'),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
+
+try:
+    from common.sse.views import (
+        SSEView,
+        UserSSEView,
+        GlobalSSEView,
+        BookingUpdatesSSEView,
+        TicketUpdatesSSEView,
+    )
+    urlpatterns += [
+        path('api/sse/global/', GlobalSSEView.as_view(), name='sse_global'),
+        path('api/sse/user/', UserSSEView.as_view(), name='sse_user'),
+        path('api/sse/bookings/', BookingUpdatesSSEView.as_view(), name='sse_bookings'),
+        path('api/sse/tickets/', TicketUpdatesSSEView.as_view(), name='sse_tickets'),
+    ]
+except ImportError:
+    pass
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

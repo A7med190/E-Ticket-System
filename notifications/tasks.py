@@ -138,7 +138,7 @@ def send_booking_cancelled_email_task(booking_id):
 
 @shared_task
 def send_event_reminders():
-    from event_tickets.models import Event
+    from event_tickets.models import Event, Booking
     now = timezone.now()
     upcoming = Event.objects.filter(
         is_published=True,

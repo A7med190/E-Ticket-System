@@ -17,10 +17,6 @@ app.conf.beat_schedule = {
         'task': 'notifications.tasks.send_event_reminders',
         'schedule': crontab(hour=8, minute=0),
     },
-    'generate-daily-reports': {
-        'task': 'event_tickets.tasks.generate_daily_report',
-        'schedule': crontab(hour=23, minute=0),
-    },
 }
 
 @app.task(bind=True)

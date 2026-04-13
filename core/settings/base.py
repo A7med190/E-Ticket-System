@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'drf_spectacular',
+    'channels',
     'accounts',
     'support_tickets',
     'event_tickets',
@@ -43,6 +44,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'common.middleware.idempotency.IdempotencyMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -64,15 +66,18 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+ASGI_APPLICATION = 'core.routing.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 DATABASES = {
     'default': {
-        'ENGINE': env('DB_ENGINE', default='django.db.backends.postgresql'),
-        'NAME': env('DB_NAME', default='eticket_db'),
-        'USER': env('DB_USER', default='postgres'),
-        'PASSWORD': env('DB_PASSWORD', default='postgres'),
-        'HOST': env('DB_HOST', default='db'),
-        'PORT': env('DB_PORT', default='5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -160,22 +165,14 @@ SPECTACULAR_SETTINGS = {
 
 REDIS_URL = env('REDIS_URL', default='redis://redis:6379/0')
 
-CELERY_BROKER_URL = REDIS_URL
-CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_TASK_ALWAYS_EAGER = env.bool('CELERY_TASK_ALWAYS_EAGER', default=True)
+CELERY_BROKER_URL = 'memory://'
+CELERY_RESULT_BACKEND = 'cache+memory://'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
-CELERY_BEAT_SCHEDULE = {
-    'send-event-reminders': {
-        'task': 'notifications.tasks.send_event_reminders',
-        'schedule': 3600.0,
-    },
-    'cleanup-expired-bookings': {
-        'task': 'notifications.tasks.cleanup_expired_bookings',
-        'schedule': 1800.0,
-    },
-}
+CELERY_TASK_EAGER_PROPAGATES = True
 
 EMAIL_BACKEND = env('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
 EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
@@ -186,3 +183,65 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@eticket.com')
 
 FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:3000')
+
+WHITENOISE_MAX_AGE = env.int('WHITENOISE_MAX_AGE', default=31536000)
+WHITENOISE_IMMUTABLE_FILE = True
+
+HEALTH_CHECK = {
+    'DISK_USAGE_MAX': 90,
+    'MEMORY_MIN': 100,
+    'CHECKS': [
+        'health_check.database.check.DatabaseCheck',
+        'health_check.cache.check.CacheCheck',
+    ],
+}
+
+WEBHOOK_SETTINGS = {
+    'MAX_RETRIES': 3,
+    'RETRY_DELAY': 60,
+    'TIMEOUT': 30,
+    'SECRET_KEY': env('WEBHOOK_SECRET', default=SECRET_KEY),
+}
+
+OUTBOX_SETTINGS = {
+    'BATCH_SIZE': env.int('OUTBOX_BATCH_SIZE', default=100),
+    'PROCESSING_INTERVAL': 10,
+}
+
+IDEMPOTENCY_SETTINGS = {
+    'HEADER_NAME': 'X-Idempotency-Key',
+    'CACHE_TIMEOUT': 86400,
+    'STORED_STATUS_CODES': [200, 201, 204],
+}
+
+CIRCUIT_BREAKER_SETTINGS = {
+    'FAILURE_THRESHOLD': 5,
+    'RECOVERY_TIMEOUT': 60,
+    'EXPECTED_EXCEPTION': 'Exception',
+}
+
+GRACEFUL_SHUTDOWN = {
+    'SHUTDOWN_TIMEOUT': env.int('SHUTDOWN_TIMEOUT', default=30),
+    'WAIT_FOR_WORKERS': True,
+}
+
+SSE_SETTINGS = {
+    'HEARTBEAT_INTERVAL': 30,
+    'RETRY_TIME': 5000,
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    },
+    'idempotency': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-idempotency',
+        'TIMEOUT': env.int('IDEMPOTENCY_CACHE_TIMEOUT', default=86400),
+    },
+    'circuit_breaker': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-circuit-breaker',
+    },
+}

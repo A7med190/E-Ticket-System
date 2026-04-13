@@ -31,7 +31,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password_confirm')
-        user = User.objects.create_user(
+        user = User.objects.create(
             email=validated_data['email'],
             password=validated_data['password'],
             first_name=validated_data.get('first_name', ''),
@@ -39,6 +39,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             role=validated_data.get('role', User.Role.CUSTOMER),
             phone=validated_data.get('phone', ''),
         )
+        user.set_password(validated_data['password'])
+        user.save()
         return user
 
 
